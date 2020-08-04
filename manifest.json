@@ -1,0 +1,10 @@
+{
+  "name": "HID Test",
+    "short_name": "HID Test",
+    "description": "HID Test",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#E6E6FA",
+    "background_color": "#E6E6FA",
+
+}
