@@ -5,9 +5,6 @@
     disconnect: null,
     addDevice: null,
     outId: null,
-    outData: null,
-    outSize: null,
-    outPad: null,
     send: null,
     inSize: null,
     inPoll: null,
@@ -17,64 +14,6 @@
 	outputLog: null,
   };
 
-const filters = [
-        {vendorId: 0x0416, productId: 0x5020},
-        {vendorId: 0x17ef, productId: 0x308d}
-      ];
-	  
-
-navigator.usb.getDevices()
-.then(devices => {
-  console.log("Total devices: " + devices.length);
-  devices.forEach(device => {
-    console.log("Product name: " + device.productName + ", serial number " + device.serialNumber);
-  });
-});
-
-
-
-navigator.usb.requestDevice({filters: filters})
-.then(usbDevice => {
-  console.log("Product name: " + usbDevice.productName);
-})
-.catch(e => {
-  console.log("There is no device. " + e);
-});
-
-/*
-let deviceFilter = { vendorId: 0x1234, productId: 0xabcd };
-let requestParams = { filters: [deviceFilter] };
-let outputReportId = 0x01;
-let outputReport = new Uint8Array([42]);
-
-function handleConnectedDevice(e) {
-  console.log("Device connected: " + e.device.productName);
-}
-
-function handleDisconnectedDevice(e) {
-  console.log("Device disconnected: " + e.device.productName);
-}
-
-function handleInputReport(e) {
-  console.log(e.device.productName + ": got input report " + e.reportId);
-  console.log(new Uint8Array(e.data.buffer));
-}
-
-navigator.hid.addEventListener("connect", handleConnectedDevice);
-navigator.hid.addEventListener("disconnect", handleDisconnectedDevice);
-
-navigator.hid.requestDevice(requestParams).then((devices) => {
-  if (devices.length == 0) return;
-  devices[0].open().then(() => {
-    console.log("Opened device: " + device.productName);
-    device.addEventListener("inputreport", handleInputReport);
-    device.sendReport(outputReportId, outputReport).then(() => {
-      console.log("Sent output report " + outputReportId);
-    });
-  });
-});
-*/
-/*
   var connection = -1;
 
   var initializeWindow = function() {
@@ -106,10 +45,10 @@ navigator.hid.requestDevice(requestParams).then((devices) => {
     ui.receive.disabled = !ioEnabled;
   };
 
-
   var enumerateDevices = function() {
-    navigator.hid.getDevices();
-
+    //chrome.hid.getDevices({}, onDevicesEnumerated);
+    //chrome.hid.onDeviceAdded.addListener(onDeviceAdded);
+    //chrome.hid.onDeviceRemoved.addListener(onDeviceRemoved);
   };
 
   var onDevicesEnumerated = function(devices) {
@@ -196,7 +135,6 @@ navigator.hid.requestDevice(requestParams).then((devices) => {
   };
 
   var onSendClicked = function() {
-
 	var bytes = new Uint8Array(255);
 	
 	for (var i = 0; i < 255; i++) {
@@ -302,5 +240,4 @@ navigator.hid.requestDevice(requestParams).then((devices) => {
   };
 
   window.addEventListener('load', initializeWindow);
-  */
 }());
