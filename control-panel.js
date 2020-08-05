@@ -26,14 +26,24 @@
       ui[k] = element;
     }
     enableIOControls(false);
-    ui.connect.addEventListener('click', onConnectClicked);
-    ui.disconnect.addEventListener('click', onDisconnectClicked);
+    //ui.connect.addEventListener('click', onConnectClicked);
+    //ui.disconnect.addEventListener('click', onDisconnectClicked);
     ui.addDevice.addEventListener('click', onAddDeviceClicked);
-    ui.send.addEventListener('click', onSendClicked);
-    ui.inPoll.addEventListener('change', onPollToggled);
-    ui.receive.addEventListener('click', onReceiveClicked);
+    //ui.send.addEventListener('click', onSendClicked);
+    //ui.inPoll.addEventListener('change', onPollToggled);
+    //ui.receive.addEventListener('click', onReceiveClicked);
     ui.clear.addEventListener('click', onClearClicked);
-    enumerateDevices();
+    //enumerateDevices();
+	
+	document.addEventListener('DOMContentLoaded', async () => {
+	  let devices = await navigator.usb.getDevices();
+	  devices.forEach(device => {
+		// Add |device| to the UI.
+		console.log(device.id);
+	  });
+	});
+	
+	
   };
 
   var enableIOControls = function(ioEnabled) {
@@ -45,11 +55,35 @@
     ui.receive.disabled = !ioEnabled;
   };
 
+	
+	
+	navigator.usb.addEventListener('connect', event => {
+	  // Add |event.device| to the UI.
+	});
+	
+	navigator.usb.addEventListener('disconnect', event => {
+	  // Remove |event.device| from the UI.
+	});
+	
+	//let button = document.getElementById('add-device');
+	
+	
+	
+
   var enumerateDevices = function() {
+	  
+	  document.addEventListener('DOMContentLoaded', async () => {
+      let devices = await navigator.usb.getDevices();
+      devices.forEach(device => {
+      // Add |device| to the UI.
+        });
+      });
     //chrome.hid.getDevices({}, onDevicesEnumerated);
     //chrome.hid.onDeviceAdded.addListener(onDeviceAdded);
     //chrome.hid.onDeviceRemoved.addListener(onDeviceRemoved);
   };
+  
+  
 
   var onDevicesEnumerated = function(devices) {
     if (chrome.runtime.lastError) {
@@ -121,6 +155,7 @@
   };
 
   var onAddDeviceClicked = function() {
+	  /*
     chrome.hid.getUserSelectedDevices({ 'multiple': false },
         function(devices) {
       if (chrome.runtime.lastError != undefined) {
@@ -132,6 +167,33 @@
         onDeviceAdded(device);
       }
     });
+	*/
+	let device;
+	  try 
+	  {
+		device = navigator.usb.requestDevice({ filters: [{
+			
+			//vendorId: 0x0781,
+			//classCode: 0xFF, // vendor-specific
+			//protocolCode: 0x01
+		}]});
+	  } 
+	  catch (err) 
+	  {
+		// No device was selected.
+		console.log("AAAA");
+	  }
+
+	  if (device !== undefined) {
+		// Add |device| to the UI.
+		name: "usb"
+
+		console.log("BBBB:" + device.vendorId);
+	  }
+	  else
+	  {
+		  console.log("CCCCCCC");
+	  }
   };
 
   var onSendClicked = function() {
