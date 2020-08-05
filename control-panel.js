@@ -39,10 +39,19 @@
 	  let devices = await navigator.usb.getDevices();
 	  devices.forEach(device => {
 		// Add |device| to the UI.
-		console.log(device.id);
+		console.log(device.vendorId);
 	  });
 	});
 	
+	
+	navigator.usb.addEventListener('connect', event => {
+	  // Add |event.device| to the UI.
+	  
+	});
+	
+	navigator.usb.addEventListener('disconnect', event => {
+	  // Remove |event.device| from the UI.
+	});
 	
   };
 
@@ -57,17 +66,35 @@
 
 	
 	
-	navigator.usb.addEventListener('connect', event => {
-	  // Add |event.device| to the UI.
-	});
 	
-	navigator.usb.addEventListener('disconnect', event => {
-	  // Remove |event.device| from the UI.
-	});
+		
 	
-	//let button = document.getElementById('add-device');
-	
-	
+	var onAddDeviceClicked = function() {
+
+	let device;
+	  try 
+	  {
+		device = navigator.hid.requestDevice({ filters: [{
+			
+			//vendorId: 0x0416,
+			//productId: 0x5020,
+		}]});
+	  } 
+	  catch (err) 
+	  {
+		// No device was selected.
+		console.log("No device was selected");
+	  }
+
+	  if (device !== undefined) {
+		// Add |device| to the UI.
+		console.log("BBBB:" + device.vendorId);
+	  }
+	  else
+	  {
+		  console.log("CCCCCCC");
+	  }
+  };
 	
 
   var enumerateDevices = function() {
@@ -154,47 +181,7 @@
     enableIOControls(false);
   };
 
-  var onAddDeviceClicked = function() {
-	  /*
-    chrome.hid.getUserSelectedDevices({ 'multiple': false },
-        function(devices) {
-      if (chrome.runtime.lastError != undefined) {
-        console.warn('chrome.hid.getUserSelectedDevices error: ' +
-                     chrome.runtime.lastError.message);
-        return;
-      }
-      for (var device of devices) {
-        onDeviceAdded(device);
-      }
-    });
-	*/
-	let device;
-	  try 
-	  {
-		device = navigator.usb.requestDevice({ filters: [{
-			
-			//vendorId: 0x0781,
-			//classCode: 0xFF, // vendor-specific
-			//protocolCode: 0x01
-		}]});
-	  } 
-	  catch (err) 
-	  {
-		// No device was selected.
-		console.log("AAAA");
-	  }
-
-	  if (device !== undefined) {
-		// Add |device| to the UI.
-		name: "usb"
-
-		console.log("BBBB:" + device.vendorId);
-	  }
-	  else
-	  {
-		  console.log("CCCCCCC");
-	  }
-  };
+  
 
   var onSendClicked = function() {
 	var bytes = new Uint8Array(255);
