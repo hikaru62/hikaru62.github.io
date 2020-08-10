@@ -1,7 +1,7 @@
 {
-  "name": "Web Community Leaders UK IE",
-    "short_name": "Web Leaders",
-    "description": "Web Community Leaders landing page",
+  "name": "Firmware Update Tool",
+    "short_name": "Update Tool",
+    "description": "Firmware Update Tool foe Docking Station",
     "lang": "en-GB",
     "start_url": "/",
     "display": "standalone",

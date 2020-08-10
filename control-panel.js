@@ -103,9 +103,9 @@
   }
 
 
-  function handleInputReport(e) {
-    console.log(e.device.productName + ": got input report " + e.reportId);
-    console.log(new Uint8Array(e.data.buffer));
+  function handleHIDInputReport(e) {
+    //console.log(e.device.productName + ": got input report " + e.reportId);
+    //console.log(new Uint8Array(e.data.buffer));
 	
 	logOutput("***Receive Report***");
 	logOutput_bytes(new Uint8Array(e.data.buffer), false);
@@ -120,55 +120,11 @@
 	  console.log(device.productName);
         });
       });
-    //chrome.hid.getDevices({}, onDevicesEnumerated);
-    //chrome.hid.onDeviceAdded.addListener(onDeviceAdded);
-    //chrome.hid.onDeviceRemoved.addListener(onDeviceRemoved);
+
   };
   
   
-  
 
-  var onDevicesEnumerated = function(devices) {
-    if (chrome.runtime.lastError) {
-      console.error("Unable to enumerate devices: " +
-                    chrome.runtime.lastError.message);
-      return;
-    }
-
-    for (var device of devices) {
-      onDeviceAdded(device);
-    }
-  }
-
-  var onDeviceAdded = function(device) {
-    var optionId = 'device-' + device.deviceId;
-    if (ui.deviceSelector.namedItem(optionId)) {
-      return;
-    }
-
-    var selectedIndex = ui.deviceSelector.selectedIndex;
-    var option = document.createElement('option');
-    option.text = "Device #" + device.deviceId + " [" +
-                  device.vendorId.toString(16) + ":" +
-                  device.productId.toString(16) + "]";
-    option.id = optionId;
-    ui.deviceSelector.options.add(option);
-    if (selectedIndex != -1) {
-      ui.deviceSelector.selectedIndex = selectedIndex;
-    }
-  };
-
-  var onDeviceRemoved = function(deviceId) {
-    var option = ui.deviceSelector.options.namedItem('device-' + deviceId);
-    if (!option) {
-      return;
-    }
-
-    if (option.selected) {
-      onDisconnectClicked();
-    }
-    ui.deviceSelector.remove(option.index);
-  };
 
   var onConnectClicked = function() {
 	HID_device[0].open().then(() => {
@@ -176,7 +132,7 @@
 	  
 	  logOutput("Connected to " + HID_device[0].productName);
 	  
-	  HID_device[0].addEventListener("inputreport", handleInputReport);
+	  HID_device[0].addEventListener("inputreport", handleHIDInputReport);
 	  
 	  enableIOControls(true);
 	});
