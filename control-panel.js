@@ -6,14 +6,13 @@
     addDevice: null,
     outId: null,
     send: null,
-    inSize: null,
     inPoll: null,
-    inputLog: null,
     receive: null,
     clear: null,
 	outputLog: null,
   };
 
+  var HID_device;
   var connection = -1;
 
   var initializeWindow = function() {
@@ -26,8 +25,8 @@
       ui[k] = element;
     }
     enableIOControls(false);
-    //ui.connect.addEventListener('click', onConnectClicked);
-    //ui.disconnect.addEventListener('click', onDisconnectClicked);
+    ui.connect.addEventListener('click', onConnectClicked);
+    ui.disconnect.addEventListener('click', onDisconnectClicked);
     ui.addDevice.addEventListener('click', onAddDeviceClicked);
     //ui.send.addEventListener('click', onSendClicked);
     //ui.inPoll.addEventListener('change', onPollToggled);
@@ -35,23 +34,22 @@
     ui.clear.addEventListener('click', onClearClicked);
     //enumerateDevices();
 	
-	document.addEventListener('DOMContentLoaded', async () => {
-	  let devices = await navigator.usb.getDevices();
-	  devices.forEach(device => {
-		// Add |device| to the UI.
-		console.log(device.vendorId);
-	  });
-	});
 	
 	
-	navigator.usb.addEventListener('connect', event => {
+	
+	//navigator.usb.addEventListener('connect', event => {
 	  // Add |event.device| to the UI.
 	  
-	});
+	  //console.log('HID connected: ${HID_device.productName}');
+	  
+	//});
 	
-	navigator.usb.addEventListener('disconnect', event => {
+	//navigator.usb.addEventListener('disconnect', event => {
 	  // Remove |event.device| from the UI.
-	});
+	//});
+	
+	navigator.hid.addEventListener("connect", handleHIDConnectedDevice);
+    navigator.hid.addEventListener("disconnect", handleHIDDisconnectedDevice);
 	
   };
 
@@ -63,22 +61,18 @@
     ui.send.disabled = !ioEnabled;
     ui.receive.disabled = !ioEnabled;
   };
-
-	
-	
-	
 		
-	
-	var onAddDeviceClicked = function() {
-
-	let device;
+  //Add Device
+  var onAddDeviceClicked = async function() {
 	  try 
 	  {
-		device = navigator.hid.requestDevice({ filters: [{
+		HID_device = await navigator.hid.requestDevice({ filters: [{
 			
-			//vendorId: 0x0416,
-			//productId: 0x5020,
+			vendorId: 0x0416,
+			productId: 0x5020,
 		}]});
+		
+		console.log("AAA:" + HID_device.vendorId);
 	  } 
 	  catch (err) 
 	  {
@@ -86,16 +80,33 @@
 		console.log("No device was selected");
 	  }
 
-	  if (device !== undefined) {
+	  //if (HID_device !== undefined) {
+      if (HID_device.length == 0) {
 		// Add |device| to the UI.
-		console.log("BBBB:" + device.vendorId);
+		console.log("Cancel Connection");
+		return;
 	  }
-	  else
-	  {
-		  console.log("CCCCCCC");
-	  }
+	  
+	  console.log("CCCCCCC: " + HID_device[0].productName);
+	  
+	  
+	  //var selectedItem = ui.deviceSelector.options[ui.deviceSelector.selectedIndex];
+	  //if (!selectedItem) {
+      //return;
+      //}
+	  
   };
-	
+
+  //Plug Dock
+  function handleHIDConnectedDevice(e) {
+	console.log("Device connected: " + e.device.productName);
+  }
+  
+  //Unplug Dock
+  function handleHIDDisconnectedDevice(e) {
+    console.log("Device disconnected: " + e.device.productName);
+  }
+
 
   var enumerateDevices = function() {
 	  
@@ -155,10 +166,14 @@
   };
 
   var onConnectClicked = function() {
-    var selectedItem = ui.deviceSelector.options[ui.deviceSelector.selectedIndex];
-    if (!selectedItem) {
-      return;
-    }
+	HID_device[0].open().then(() => {
+    console.log("Opened device: " + HID_device[0].productName);
+	
+	  enableIOControls(true);
+	});
+	/*
+    
+    
     var deviceId = parseInt(selectedItem.id.substr('device-'.length), 10);
     if (!deviceId) {
       return;
@@ -170,15 +185,23 @@
       connection = connectInfo.connectionId;
       enableIOControls(true);
     });
+	*/
   };
 
   var onDisconnectClicked = function() {
+	HID_device[0].close().then(() => {
+    console.log("Closed device: " + HID_device[0].productName);
+	
+	  enableIOControls(false);
+	});
+	/*
     if (connection === -1)
       return;
     chrome.hid.disconnect(connection, function() {
       connection = -1;
     });
     enableIOControls(false);
+	*/
   };
 
   
