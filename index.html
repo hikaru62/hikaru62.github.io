@@ -50,24 +50,16 @@ if ('serviceWorker' in navigator) {
       <button id="add-device">Add Device...</button>
     </div>
     <div id="output-panel">
-      <h3>OUTPUT</h3>
+      <h3>Settings</h3>
       <label>Report ID (0 for none):</label>
-      <input type="number" id="out-id" min="0" max="255" value="2">
-      <br><br>
-      <button id="send">Send Report</button><br><br>
+      <input type="number" id="out-id" min="0" max="255" value="2"><br><br>
+	  <button id="send">Send Report</button><br><br>
+	  <button id="receive">Read Report (cancels polling)</button><br><br>
+      <button id="clear">Clear Log</button><br><br>
+	  <label>Poll?</label>
+      <input type="checkbox" id="in-poll"><br><br>
 	  <label>Output Log:</label><br>
-      <textarea id="output-log" style="width:100%" rows="18" readonly></textarea><br>
-    </div>
-    <div id="input-panel">
-      <h3>INPUT</h3>
-      <label>Expected Report Size</label>
-      <input type="number" id="in-size" value="64" min="1" max="64"><br>
-      <label>Poll?</label>
-      <input type="checkbox" id="in-poll"><br>
-      <label>Input Log:</label><br>
-      <textarea id="input-log" style="width:100%" rows="20" readonly></textarea><br>
-      <button id="receive">Read Report (cancels polling)</button>
-      <button id="clear">Clear Log</button>
+      <textarea id="output-log" style="width:100%" rows="25" readonly></textarea><br>
     </div>
 </body>
 </html>
