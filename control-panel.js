@@ -1,13 +1,11 @@
 (function() {
   var ui = {
-    deviceSelector: null,
     connect: null,
     disconnect: null,
-    addDevice: null,
-    outId: null,
+    getDock: null,
+    sentReportId: null,
+	readReportId: null,
     send: null,
-    inPoll: null,
-    receive: null,
     clear: null,
 	outputLog: null,
   };
@@ -27,10 +25,9 @@
     enableIOControls(false);
     ui.connect.addEventListener('click', onConnectClicked);
     ui.disconnect.addEventListener('click', onDisconnectClicked);
-    ui.addDevice.addEventListener('click', onAddDeviceClicked);
-    //ui.send.addEventListener('click', onSendClicked);
-    //ui.inPoll.addEventListener('change', onPollToggled);
-    //ui.receive.addEventListener('click', onReceiveClicked);
+    ui.getDock.addEventListener('click', onGetDockClicked);
+    ui.send.addEventListener('click', onSendClicked);
+
     ui.clear.addEventListener('click', onClearClicked);
     //enumerateDevices();
 	
@@ -48,22 +45,26 @@
 	  // Remove |event.device| from the UI.
 	//});
 	
+	
+
+	//Plug & Unplug Dock event
 	navigator.hid.addEventListener("connect", handleHIDConnectedDevice);
     navigator.hid.addEventListener("disconnect", handleHIDDisconnectedDevice);
-	
+		
   };
 
   var enableIOControls = function(ioEnabled) {
-    ui.deviceSelector.disabled = ioEnabled;
+
     ui.connect.style.display = ioEnabled ? 'none' : 'inline';
     ui.disconnect.style.display = ioEnabled ? 'inline' : 'none';
-    ui.inPoll.disabled = !ioEnabled;
+
     ui.send.disabled = !ioEnabled;
-    ui.receive.disabled = !ioEnabled;
+	ui.sentReportId.disabled = true;
+	ui.readReportId.disabled = true;
   };
 		
   //Add Device
-  var onAddDeviceClicked = async function() {
+  var onGetDockClicked = async function() {
 	  try 
 	  {
 		HID_device = await navigator.hid.requestDevice({ filters: [{
@@ -71,30 +72,24 @@
 			vendorId: 0x0416,
 			productId: 0x5020,
 		}]});
-		
-		console.log("AAA:" + HID_device.vendorId);
 	  } 
 	  catch (err) 
 	  {
 		// No device was selected.
 		console.log("No device was selected");
+		logOutput("No Dock was detected");
 	  }
 
-	  //if (HID_device !== undefined) {
       if (HID_device.length == 0) {
 		// Add |device| to the UI.
-		console.log("Cancel Connection");
+		console.log("No device was selected");
+		logOutput("No Dock was selected...");
 		return;
 	  }
 	  
-	  console.log("CCCCCCC: " + HID_device[0].productName);
-	  
-	  
-	  //var selectedItem = ui.deviceSelector.options[ui.deviceSelector.selectedIndex];
-	  //if (!selectedItem) {
-      //return;
-      //}
-	  
+	  console.log(HID_device[0].productName + " is selected");
+	  logOutput(HID_device[0].productName + " is selected");
+	  	  
   };
 
   //Plug Dock
@@ -108,18 +103,28 @@
   }
 
 
+  function handleInputReport(e) {
+    console.log(e.device.productName + ": got input report " + e.reportId);
+    console.log(new Uint8Array(e.data.buffer));
+	
+	logOutput("***Receive Report***");
+	logOutput_bytes(new Uint8Array(e.data.buffer), false);
+  }
+
   var enumerateDevices = function() {
 	  
 	  document.addEventListener('DOMContentLoaded', async () => {
-      let devices = await navigator.usb.getDevices();
+      let devices = await navigator.hid.getDevices();
       devices.forEach(device => {
       // Add |device| to the UI.
+	  console.log(device.productName);
         });
       });
     //chrome.hid.getDevices({}, onDevicesEnumerated);
     //chrome.hid.onDeviceAdded.addListener(onDeviceAdded);
     //chrome.hid.onDeviceRemoved.addListener(onDeviceRemoved);
   };
+  
   
   
 
@@ -167,30 +172,22 @@
 
   var onConnectClicked = function() {
 	HID_device[0].open().then(() => {
-    console.log("Opened device: " + HID_device[0].productName);
-	
+      console.log("Opened device: " + HID_device[0].productName);
+	  
+	  logOutput("Connected to " + HID_device[0].productName);
+	  
+	  HID_device[0].addEventListener("inputreport", handleInputReport);
+	  
 	  enableIOControls(true);
 	});
-	/*
-    
-    
-    var deviceId = parseInt(selectedItem.id.substr('device-'.length), 10);
-    if (!deviceId) {
-      return;
-    }
-    chrome.hid.connect(deviceId, function(connectInfo) {
-      if (!connectInfo) {
-        console.warn("Unable to connect to device.");
-      }
-      connection = connectInfo.connectionId;
-      enableIOControls(true);
-    });
-	*/
+
   };
 
   var onDisconnectClicked = function() {
 	HID_device[0].close().then(() => {
     console.log("Closed device: " + HID_device[0].productName);
+	
+	logOutput("Disconnected " + HID_device[0].productName);
 	
 	  enableIOControls(false);
 	});
@@ -220,44 +217,23 @@
 	bytes[3] = 0xd2;
 	bytes[254] = 0x6a;
 	
-	logInput(bytes);
+	//logInput(bytes);
+	
+	
+	
 	
     ui.send.disabled = true;
-    chrome.hid.send(connection, id, bytes.buffer, function() {
-      ui.send.disabled = false;
+	
+	HID_device[0].sendReport(ui.sentReportId.value, bytes).then(() => {
+	  ui.send.disabled = false;
+      console.log("Sent Report");
+	  logOutput("***Sent Report***");
+	  logOutput_bytes(bytes, true);
+	  
     });
   };
 
-  var isReceivePending = false;
-  var pollForInput = function() {
-    var size = +ui.inSize.value;
-    isReceivePending = true;
-    chrome.hid.receive(connection, function(reportId, data) {
-      isReceivePending = false;
-      logInput(new Uint8Array(data));
-      if (ui.inPoll.checked) {
-        setTimeout(pollForInput, 0);
-      }
-    });
-  };
 
-  var enablePolling = function(pollEnabled) {
-    ui.inPoll.checked = pollEnabled;
-    if (pollEnabled && !isReceivePending) {
-      pollForInput();
-    }
-  };
-
-  var onPollToggled = function() {
-    enablePolling(ui.inPoll.checked);
-  };
-
-  var onReceiveClicked = function() {
-    enablePolling(false);
-    if (!isReceivePending) {
-      pollForInput();
-    }
-  };
 
   var byteToHex = function(value) {
     if (value < 16)
@@ -265,50 +241,36 @@
     return value.toString(16);
   };
 
-  var logInput = function(bytes) {
-    var log = '';
-    for (var i = 0; i < bytes.length; i += 16) {
-      var sliceLength = Math.min(bytes.length - i, 16);
-      var lineBytes = new Uint8Array(bytes.buffer, i, sliceLength);
-      for (var j = 0; j < lineBytes.length; ++j) {
-        log += byteToHex(lineBytes[j]) + ' ';
-      }
-      for (var j = 0; j < lineBytes.length; ++j) {
-        var ch = String.fromCharCode(lineBytes[j]);
-        if (lineBytes[j] < 32 || lineBytes[j] > 126)
-          ch = '.';
-        log += ch;
-      }
-      log += '\n';
-    }
-    log += "================================================================\n";
-    ui.inputLog.textContent += log;
-    ui.inputLog.scrollTop = ui.inputLog.scrollHeight;
+  
+  var logOutput = function(myText) {
+    ui.outputLog.textContent += myText + "\n";
+    ui.outputLog.scrollTop = ui.outputLog.scrollHeight;
   };
   
-  var logOutput = function(bytes) {
-    var log = '';
-    for (var i = 0; i < bytes.length; i += 16) {
+  var logOutput_bytes = function(bytes, bSent) {
+    var log = byteToHex(ui.sentReportId.value) + ' ';
+	if (!bSent)
+		log = byteToHex(ui.readReportId.value) + ' ';
+	
+	for (var i = 0; i < bytes.length; i += 16) {
       var sliceLength = Math.min(bytes.length - i, 16);
       var lineBytes = new Uint8Array(bytes.buffer, i, sliceLength);
       for (var j = 0; j < lineBytes.length; ++j) {
         log += byteToHex(lineBytes[j]) + ' ';
+		
+		if ( j % 15 == 14)
+			log += '\n'
       }
-      for (var j = 0; j < lineBytes.length; ++j) {
-        var ch = String.fromCharCode(lineBytes[j]);
-        if (lineBytes[j] < 32 || lineBytes[j] > 126)
-          ch = '.';
-        log += ch;
-      }
-      log += '\n';
+	  
     }
-    log += "================================================================\n";
+	
+    log += "===============================================\n";
     ui.outputLog.textContent += log;
-    ui.inputLog.scrollTop = ui.inputLog.scrollHeight;
+    ui.outputLog.scrollTop = ui.outputLog.scrollHeight;
   };
 
   var onClearClicked = function() {
-    ui.inputLog.textContent = "";
+    ui.outputLog.textContent = "";
   };
 
   window.addEventListener('load', initializeWindow);
