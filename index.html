@@ -43,18 +43,21 @@ if ('serviceWorker' in navigator) {
 </head>
 <body> 
   <div id="device-panel">
-      <h1>USB Test</h1>
-      <button id="connect">Connect</button>
+      <h1>Firmware Update Tool</h1>
+	  <button id="get-dock">Get Dock</button>
       <button id="disconnect">Disconnect</button>
-      <button id="get-dock">Get Dock...</button>
     </div>
     <div id="output-panel">
-      <h3>Settings</h3>
+	  <!--
       <label>Sent Report ID:</label>
-      <input type="number" id="sent-reportid" min="0" max="255" value="2" style="text-align:center"><br><br>
+      <input type="number" id="sent-reportid" min="0" max="255" value="2" style="text-align:center">
 	  <label>Read Report ID:</label>
-      <input type="number" id="read-reportid" min="0" max="255" value="1" style="text-align:center"><br><br>
-	  <button id="send">Send Report</button><br><br>
+      <input type="number" id="read-reportid" min="0" max="255" value="1" style="text-align:center"><br><br> 
+	  -->
+	  <input id="fileUploader" type="file">
+	  <button id="select-fw">Select File</button><br><br>
+	  <textarea id="fw-path" style="width:100%" rows="1" readonly></textarea><br><br>
+	  <button id="update">Update</button><br><br>
       <button id="clear">Clear Log</button><br><br>
 	  <label>Output Log:</label><br>
       <textarea id="output-log" style="width:100%" rows="25" readonly></textarea><br>

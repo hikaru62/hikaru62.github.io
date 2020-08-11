@@ -10,8 +10,12 @@ div {
   flex: 1 100%;
 }
 
+textarea {
+  resize : none;
+}
+/*
 #output-panel,
 #input-panel {
   flex: 1 0;
 }
-
+*/

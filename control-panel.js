@@ -1,17 +1,19 @@
 (function() {
   var ui = {
-    connect: null,
     disconnect: null,
     getDock: null,
-    sentReportId: null,
-	readReportId: null,
-    send: null,
+	selectFW: null,
+    update: null,
     clear: null,
 	outputLog: null,
+	fwPath: null,
   };
 
   var HID_device;
   var connection = -1;
+  var sentReportId = 2;
+  var readReportId = 1;
+  var FW_Path = "";
 
   var initializeWindow = function() {
     for (var k in ui) {
@@ -23,10 +25,11 @@
       ui[k] = element;
     }
     enableIOControls(false);
-    ui.connect.addEventListener('click', onConnectClicked);
+
     ui.disconnect.addEventListener('click', onDisconnectClicked);
     ui.getDock.addEventListener('click', onGetDockClicked);
-    ui.send.addEventListener('click', onSendClicked);
+	ui.selectFW.addEventListener('click', onSelectFWClicked);
+    ui.update.addEventListener('click', onUpdateClicked);
 
     ui.clear.addEventListener('click', onClearClicked);
     //enumerateDevices();
@@ -54,13 +57,10 @@
   };
 
   var enableIOControls = function(ioEnabled) {
-
-    ui.connect.style.display = ioEnabled ? 'none' : 'inline';
-    ui.disconnect.style.display = ioEnabled ? 'inline' : 'none';
-
-    ui.send.disabled = !ioEnabled;
-	ui.sentReportId.disabled = true;
-	ui.readReportId.disabled = true;
+	
+	ui.disconnect.disabled = !ioEnabled;
+	ui.selectFW.disabled = !ioEnabled;
+    ui.update.disabled = !ioEnabled;
   };
 		
   //Add Device
@@ -89,6 +89,8 @@
 	  
 	  console.log(HID_device[0].productName + " is selected");
 	  logOutput(HID_device[0].productName + " is selected");
+	  
+	  ConnectHIDDevice();
 	  	  
   };
 
@@ -125,8 +127,7 @@
   
   
 
-
-  var onConnectClicked = function() {
+  var ConnectHIDDevice = function() {
 	HID_device[0].open().then(() => {
       console.log("Opened device: " + HID_device[0].productName);
 	  
@@ -157,9 +158,43 @@
 	*/
   };
 
+  var onSelectFWClicked = async function() {
+
+     logOutput("Click Select File button");
+	 
+	 FW_Path = await self.showOpenFilePicker({
+       multiple: false,
+       types: [{description: 'Binary files', accept: {'BIN/*': ['bin', 'txt']}}],
+       //suggestedStartLocation: 'pictures-library'
+	   permission: { readable:true}
+     });
+	 
+	 if (!FW_Path)
+	 {
+		 logOutput("No Firmware file selected");
+		 return;
+	 }
+
+     const file_reader = new FileReader();
+     file_reader.onload = (event) => {
+			 
+			 logOutput(FW_Path);
+			 logOutput(event.target.result);
+			 
+	 }
+	 file_reader.readAsText(FW_Path)
+		 
+		 //navigator.files.requestPermission
+		 //FW_Path.requestPermission({ writable: true })
+		 logOutput(FW_Path);
+		 
+		 //FW_Path.requestPermission({ read: true })
+		 //ui.fwPath.textContent = FW_Path.pathname.gets
+	 
+  };
   
 
-  var onSendClicked = function() {
+  var onUpdateClicked = function() {
 	var bytes = new Uint8Array(255);
 	
 	for (var i = 0; i < 255; i++) {
@@ -177,11 +212,12 @@
 	
 	
 	
+	ui.selectFW.disabled = true;
+    ui.update.disabled = true;
 	
-    ui.send.disabled = true;
-	
-	HID_device[0].sendReport(ui.sentReportId.value, bytes).then(() => {
-	  ui.send.disabled = false;
+	HID_device[0].sendReport(sentReportId, bytes).then(() => {
+	  ui.selectFW.disabled = false;
+	  ui.update.disabled = false;
       console.log("Sent Report");
 	  logOutput("***Sent Report***");
 	  logOutput_bytes(bytes, true);
@@ -204,9 +240,9 @@
   };
   
   var logOutput_bytes = function(bytes, bSent) {
-    var log = byteToHex(ui.sentReportId.value) + ' ';
+    var log = byteToHex(sentReportId) + ' ';
 	if (!bSent)
-		log = byteToHex(ui.readReportId.value) + ' ';
+		log = byteToHex(readReportId) + ' ';
 	
 	for (var i = 0; i < bytes.length; i += 16) {
       var sliceLength = Math.min(bytes.length - i, 16);
