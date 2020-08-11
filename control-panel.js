@@ -6,14 +6,15 @@
     update: null,
     clear: null,
 	outputLog: null,
-	fwPath: null,
   };
 
   var HID_device;
   var connection = -1;
   var sentReportId = 2;
   var readReportId = 1;
-  var FW_Path = "";
+  
+  var fileReader = new FileReader();
+  var FW_Bin_array = null;
 
   var initializeWindow = function() {
     for (var k in ui) {
@@ -28,7 +29,7 @@
 
     ui.disconnect.addEventListener('click', onDisconnectClicked);
     ui.getDock.addEventListener('click', onGetDockClicked);
-	ui.selectFW.addEventListener('click', onSelectFWClicked);
+	ui.selectFW.addEventListener('change', onSelectFWClicked);
     ui.update.addEventListener('click', onUpdateClicked);
 
     ui.clear.addEventListener('click', onClearClicked);
@@ -53,6 +54,19 @@
 	//Plug & Unplug Dock event
 	navigator.hid.addEventListener("connect", handleHIDConnectedDevice);
     navigator.hid.addEventListener("disconnect", handleHIDDisconnectedDevice);
+	
+	
+	fileReader.addEventListener("load", function(event) {
+	//讀取後設定<img>的src
+	    var data = event.target.result;
+		FW_Bin_array = new Uint8Array(data)
+		
+		var Checksum = new Uint16Array(1);
+		
+		FW_Bin_array.forEach(value => Checksum[0] += value)
+		
+        logOutput("File size(bytes): " + FW_Bin_array.length + " , CheckSum: " + Checksum[0]);
+    });
 		
   };
 
@@ -158,8 +172,18 @@
 	*/
   };
 
-  var onSelectFWClicked = async function() {
-
+  var onSelectFWClicked = function() {
+	 
+	 if (this.files.length > 0) {
+		 fileReader.readAsArrayBuffer(this.files[0])
+        //fileReader.readAsText(this.files[0])
+        //fileReader.readAsDataURL(this.files[0]);
+     }
+	 else
+	 {
+		logOutput("No Firmware file selected");
+     }
+/*
      logOutput("Click Select File button");
 	 
 	 FW_Path = await self.showOpenFilePicker({
@@ -189,7 +213,7 @@
 		 logOutput(FW_Path);
 		 
 		 //FW_Path.requestPermission({ read: true })
-		 //ui.fwPath.textContent = FW_Path.pathname.gets
+		 //ui.fwPath.textContent = FW_Path.pathname.gets*/
 	 
   };
   
