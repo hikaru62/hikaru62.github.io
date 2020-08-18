@@ -13,25 +13,41 @@ FWUpdate_VL822_Q7 class included:
 class FWUpdate_VL822_Q7
 {
 	constructor() {	
+		this. bStartProcess = false;
+		
 		this.readfile_TotalCount = 0;
 		this.bPassFlag = true;
 		
-		this.bEndWork = new Boolean(1);
-		this.bEndWork[0] = false;
+		//this.bEndWork = new Boolean(1);
+		this.bEndWork = false;
 		this.bUpdateFW_Done = false;
 		
 		this.u16_CheckSum = new Uint16Array(1);
 		this.u16_CheckSum[0] = 0;
 		
 		this.u32_m_sequense = new Uint32Array(1);
-		this.u32_m_sequense[0] = 0
+		this.u32_m_sequense[0] = 0;
+		
+		this.FW_Order = ISP_BIN_FILE_SEQUENCE.BIN_VL822_Q7;
 	}
 
 
 	StartUpdate() {
-		console.log("Start updating Q7 Firmware");
+		
+		this. bStartProcess = true;
+		
+		if ( (FW_Option[0] & (0x01 << this.FW_Order)) === 0 )
+		{
+			logOutput("Skip updating Q7 Firmware..." +　(FW_Option[0] & this.FW_Order));
+			
+			this.bEndWork = true;
+			
+			return;
+		}
+			
+		console.log("Start updating Q7 Firmware [" + (FW_Option[0] & (0x01 << this.FW_Order)) + "]");
 
-		logOutput("Start updating Q7 Firmware...");
+		logOutput("Start updating Q7 Firmware [" + (FW_Option[0] & (0x01 << this.FW_Order)) + "]");
 		
 		this.Initialize();
 		
@@ -65,28 +81,16 @@ class FWUpdate_VL822_Q7
 		bytes[3] = UPDATE_CMD_Q7.USBUID_ISP_DEVICE_CMD_VL822_Q7_INITIAL;
 
 		var slot_index = new Uint16Array(1);
-		slot_index[0] = 0x01 << ISP_BIN_FILE_SEQUENCE.BIN_VL822_Q7;
+		slot_index[0] = 0x01 << this.FW_Order;
 		
 		bytes[4] = (slot_index[0] >> 8) & 0xFF;         // Is the update successful? [high byte]
 		bytes[5] = slot_index[0] & 0xFF;					// Is the update successful? [low byte]
 
 		bytes[254] = 0x6a;	
-
-		//logOutput("*****************");
-		//logOutput_bytes(bytes, true);
 		
 		HID_device[0].sendReport(sentReportId, bytes).then( () => {
 			//logOutput("***Sent Report***");
-			//logOutput_bytes(bytes, true);
-			/*
-			while (!this.bEndWork) {
-				setTimeout(function() {
-					//your code to be executed after time up
-					logOutput("***Waitting***");
-					}, 500);
-				
-			}*/
-			
+			//logOutput_bytes(bytes, true);		
 		});
 	};
 
@@ -139,7 +143,9 @@ class FWUpdate_VL822_Q7
 
 	FW_Program(bFirstTimeProgram) {
 		
-		var Total_FileSize = FW_Bin_array.length;
+		//var Total_FileSize = FW_Bin_array.length;
+		var Total_FileSize = FW_Size_List[this.FW_Order];
+		var FW_Start_Pos = FW_Index_List[this.FW_Order] + 38;
 		
 		if (bFirstTimeProgram)
 		{
@@ -192,11 +198,11 @@ class FWUpdate_VL822_Q7
 			{
 				// if (this.readfile_TotalCount <= 256 && i < 16)
 				// {
-					// logOutput("FW_Bin: " + FW_Bin_array[this.readfile_TotalCount + i]);
+					// logOutput("FW_Bin: " + FW_Bin_array[FW_Start_Pos + this.readfile_TotalCount + i]);
 				// }
 				
-				bytes[7 + i] = FW_Bin_array[this.readfile_TotalCount + i];
-				this.u16_CheckSum[0] += FW_Bin_array[this.readfile_TotalCount + i];
+				bytes[7 + i] = FW_Bin_array[FW_Start_Pos + this.readfile_TotalCount + i];
+				this.u16_CheckSum[0] += FW_Bin_array[FW_Start_Pos + this.readfile_TotalCount + i];
 			}
 			
 			bytes[254] = 0x6a;	
@@ -235,7 +241,7 @@ class FWUpdate_VL822_Q7
 		bytes[3] = UPDATE_CMD_Q7.USBUID_ISP_DEVICE_CMD_VL822_Q7_CHECKSUM;
 
 		var u32Total_File_Size = new Uint32Array(1);
-		u32Total_File_Size[0] = FW_Bin_array.length;
+		u32Total_File_Size[0] = FW_Size_List[this.FW_Order];//FW_Bin_array.length;
 		
 		bytes[4] = (u32Total_File_Size[0] >> 24);
 		bytes[5] = (u32Total_File_Size[0] >> 16);
@@ -267,7 +273,7 @@ class FWUpdate_VL822_Q7
 		bytes[4] = 0x00;
 
 		var slot_index = new Uint16Array(1);
-		slot_index[0] = 0x01 << ISP_BIN_FILE_SEQUENCE.BIN_VL822_Q7;
+		slot_index[0] = 0x01 << this.FW_Order;
 		
 		bytes[5] = (slot_index[0] >> 8) & 0xFF;
 		bytes[6] = slot_index[0] & 0xFF;
@@ -283,26 +289,22 @@ class FWUpdate_VL822_Q7
 			bytes[8] = 0x00;
 		}
 
-		//version
-		bytes[9] = 	0x30 + 0;
-		bytes[10] = 0x30 + 7;
-		bytes[11] = 0x30 + 5;
-		bytes[12] = 0x30 + 3;
-		bytes[13] = 0x20 + 0;
-		bytes[14] = 0x20 + 0;
-		bytes[15] = 0x20 + 0;
-		bytes[16] = 0x20 + 0;
-		bytes[17] = 0x20 + 0;
-		bytes[18] = 0x20 + 0;
-		bytes[19] = 0x20 + 0;
-		bytes[20] = 0x20 + 0;
-		bytes[21] = 0x30 + 2;
-		bytes[22] = 0x30 + 0;
-		bytes[23] = 0x30 + 0;
-		bytes[24] = 0x30 + 8;
-		bytes[25] = 0x30 + 1;
-		bytes[26] = 0x30 + 2;
-		bytes[27] = 0x20 + 0;
+		//version	
+		for (var i = 0; i < 19; i++)
+		{
+			if (i < 12)
+			{
+				bytes[9 + i] = FW_Ver_from_File[this.FW_Order].charCodeAt(i);
+			}
+			else
+			{
+				bytes[9 + i] = FW_Date_from_File[this.FW_Order].charCodeAt(i - 12);
+			}
+			
+			//logOutput(byteToHex(bytes[9 + i]));
+		}
+		
+		
 		
 		bytes[254] = 0x6a;	
 		
@@ -315,8 +317,13 @@ class FWUpdate_VL822_Q7
 
 	AnalyzeUSBRxData(RxData)
 	{
+		if (!this.bStartProcess || this.bEndWork)
+		{
+			return;
+		}
+		
 		//this = this class
-		//logOutput("this1: " + this.bEndWork[0]);
+		//logOutput("this1: " + this.bEndWork);
 		//RxData[0] === command
 		switch (RxData[0]) {
 			case UPDATE_CMD_Q7.USBUID_ISP_DEVICE_CMD_VL822_Q7_INITIAL:
@@ -364,7 +371,6 @@ class FWUpdate_VL822_Q7
 					setTimeout(function() {
 						that.ReadStatus();
 					}, 500);
-
 				}                         
 			}
 			break;
@@ -410,7 +416,7 @@ class FWUpdate_VL822_Q7
 			{
 				// logOutput_bytes(RxData, false);
 				
-				this.bEndWork[0] = true;
+				this.bEndWork = true;
 				logOutput("Finish HUB VL822_Q7 FW update!");
 				
 				//bStartProcess = false;
@@ -418,9 +424,6 @@ class FWUpdate_VL822_Q7
 			break;
 			// default:
 		}
-		
-		
-		
 	};
 	
 }
