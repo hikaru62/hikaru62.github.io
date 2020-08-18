@@ -322,7 +322,6 @@ var CheckFileFWVer = function() {
 		
 
 
-
 var onUpdateClicked = async function() {
 	
 	ClickedUpdateButton = true;
