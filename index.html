@@ -28,6 +28,10 @@ if ('serviceWorker' in navigator) {
   <title>HP Update Tool</title>
   <link rel="stylesheet" href="style.css">
   
+  <script src="/settings_init.js"></script>
+  <script src="/ui_init.js"></script>
+  <script src="/upload_bin_file.js"></script>
+  <script src="/dock_ctrl.js"></script>
   <script src="/main.js"></script>
   
 
@@ -46,10 +50,10 @@ if ('serviceWorker' in navigator) {
       <input type="number" id="read-reportid" min="0" max="255" value="1" style="text-align:center"><br><br> 
 	  -->
 	  <input id="select-fw" type="file"><br><br>
+	  <button id="checkver">Check Version</button>
 	  <button id="update">Update</button><br><br>
-	  <button id="contupdate">Continue</button><br><br>
       <button id="clear">Clear Log</button><br><br>
-	  <label>Output Log:</label><br>
+	  <label>Log:</label><br>
       <textarea id="output-log" style="width:100%" rows="25" readonly></textarea><br>
     </div>
 </body>
