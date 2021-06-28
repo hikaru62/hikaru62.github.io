@@ -1,7 +1,7 @@
 // Choose a cache name
 const cacheName = 'cache-v1';
 // List the files to precache
-const precacheResources = ['/', '/index.html', '/icons/HP_Logo_60x60.png', '/icons/favicon-96x96.png', '/icons/favicon-32x32.png', '/icons/favicon-16x16.png', '/style.css', '/main.js'];
+const precacheResources = ['/', '/index.html', '/icons/HP_Logo_60x60.png', '/icons/favicon-96x96.png', '/icons/favicon-32x32.png', '/icons/favicon-16x16.png', '/style.css', '/manifest.json', '/settings_init.js', '/ui_init.js', '/upload_bin_file.js', '/dock_ctrl.js', '/main.js'];
 
 // When the service worker is installing, open the cache and add the precache resources to it
 self.addEventListener('install', (event) => {

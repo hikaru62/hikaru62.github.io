@@ -39,6 +39,9 @@ div {
 }
 
 #output-log {
+	/*disable log*/
+	//display: none;
+	
 	font-family:Microsoft JhengHei,monospace,arial,sans-serif,serif;
 	resize : none;
 	vertical-align:top;

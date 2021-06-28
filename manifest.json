@@ -1,7 +1,7 @@
 {
-  "name": "HP USB-C G2 - Firmware Update Tool",
-    "short_name": "HP Update Tool",
-    "description": "Firmware Update Tool for HP USB-C G2 Multiport Hub",
+  "name": "HP USB-C G2 Multiport Hub Firmware Installer",
+    "short_name": "HP Firmware Installer",
+    "description": "HP Firmware Installer for HP USB-C G2 Multiport Hub",
     "lang": "en-GB",
     "start_url": "/",
     "display": "standalone",
