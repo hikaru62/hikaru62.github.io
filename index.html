@@ -11,7 +11,9 @@
 <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
 <link rel="manifest" href="/manifest.json">
 
-<script>
+
+<script type="module">
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/sw.js').then(function(registration) {
@@ -26,9 +28,9 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <title>HP Firmware Installer</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?t=202107021807">
 
-<script src="/main.js"></script>
+<script src="/main.js?t=202107021807"></script>
   
 </head>
 
