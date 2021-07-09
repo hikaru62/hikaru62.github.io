@@ -31,7 +31,6 @@ const precacheResources = [
 	{url: '/style.css', revision: '1000'},
 	{url: '/manifest.json', revision: '1000'},
 	{url: '/main.js', revision: '1000'},
-	
 ];	
 
 

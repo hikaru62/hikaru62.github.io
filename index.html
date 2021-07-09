@@ -7,7 +7,7 @@
 <script type="module">
 
 if ('serviceWorker' in navigator) {
-
+	
 	/*
 	//unregister service worker
 	await navigator.serviceWorker.getRegistrations().then(function (registrations) {
@@ -18,7 +18,7 @@ if ('serviceWorker' in navigator) {
 				registration.unregister();
 			}
 		}
-	});	
+	});
 	*/
 	
 	window.addEventListener('load', function() {
@@ -30,6 +30,21 @@ if ('serviceWorker' in navigator) {
 			console.log('ServiceWorker registration failed: ', err);
 		});
 	});
+	
+	window.addEventListener('beforeunload', async function () {
+	
+		await navigator.serviceWorker.getRegistrations().then(function (registrations) {
+		//returns installed service workers
+			if (registrations.length) {
+				for(let registration of registrations) {
+					//registration.update();
+					registration.unregister();
+				}
+			}
+		});
+	
+
+	});
 }
 </script>
 
@@ -38,10 +53,10 @@ if ('serviceWorker' in navigator) {
 <link rel="apple-touch-icon" sizes="192x192" href="icons/HP_Logo_192x192.png">
 <link rel="icon" type="image/ico" sizes="16x16" href="icons/favicon.ico">
 
-<link rel="manifest" href="/manifest.json?rev=1000">
-<link rel="stylesheet" href="style.css?rev=1000">
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="style.css">
 
-<script src="/main.js?rev=1000"></script>
+<script src="/main.js"></script>
   
 </head>
 
@@ -51,7 +66,7 @@ if ('serviceWorker' in navigator) {
 		<img src="/icons/HP_Logo_60x60.png" alt="HP Logo"/>
 		<span>
 			HP USB-C G2 Multiport Hub<br>
-			Firmware Installer
+			Firmware Installer v1.0.0.0
 		</span>
 	</div>
 	<div id="device-panel">
