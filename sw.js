@@ -13,9 +13,6 @@ const precacheResources = [
 	{url: '/workbox-v6.1.5/workbox-routing.prod.js', revision: 'v6.1.5'},
 	{url: '/workbox-v6.1.5/workbox-routing.prod.js.map', revision: 'v6.1.5'},
 	
-	{url: '/index.html', revision: '1000'},
-	/*{url: '/offline.html', revision: '1000'},*/
-	
 	{url: '/icons/android-icon-36x36.png', revision: '1000'},
 	{url: '/icons/android-icon-48x48.png', revision: '1000'},
 	{url: '/icons/android-icon-72x72.png', revision: '1000'},
@@ -28,9 +25,12 @@ const precacheResources = [
 	
 	{url: '/icons/favicon.ico', revision: '1000'},
 
-	{url: '/style.css', revision: '1000'},
-	{url: '/manifest.json', revision: '1000'},
-	{url: '/main.js', revision: '1000'},
+
+	{url: '/index.html', revision: '0001'},
+	{url: '/style.css', revision: '0001'},
+	{url: '/manifest.json', revision: '0001'},
+	{url: '/main.js', revision: '0001'},
+	
 ];	
 
 
