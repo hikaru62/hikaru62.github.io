@@ -13,23 +13,23 @@ const precacheResources = [
 	{url: '/workbox-v6.1.5/workbox-routing.prod.js', revision: 'v6.1.5'},
 	{url: '/workbox-v6.1.5/workbox-routing.prod.js.map', revision: 'v6.1.5'},
 	
-	{url: '/icons/android-icon-36x36.png', revision: '1000'},
-	{url: '/icons/android-icon-48x48.png', revision: '1000'},
-	{url: '/icons/android-icon-72x72.png', revision: '1000'},
-	{url: '/icons/android-icon-96x96.png', revision: '1000'},
-	{url: '/icons/android-icon-144x144.png', revision: '1000'},
-	{url: '/icons/android-icon-192x192.png', revision: '1000'},
+	{url: '/icons/android-icon-36x36.png', revision: '0100'},
+	{url: '/icons/android-icon-48x48.png', revision: '0100'},
+	{url: '/icons/android-icon-72x72.png', revision: '0100'},
+	{url: '/icons/android-icon-96x96.png', revision: '0100'},
+	{url: '/icons/android-icon-144x144.png', revision: '0100'},
+	{url: '/icons/android-icon-192x192.png', revision: '0100'},
 	
-	{url: '/icons/HP_Logo_60x60.png', revision: '1000'},
-	{url: '/icons/HP_Logo_192x192.png', revision: '1000'},
+	{url: '/icons/HP_Logo_60x60.png', revision: '0100'},
+	{url: '/icons/HP_Logo_192x192.png', revision: '0100'},
 	
-	{url: '/icons/favicon.ico', revision: '1000'},
+	{url: '/icons/favicon.ico', revision: '0100'},
 
 
-	{url: '/index.html', revision: '0001'},
-	{url: '/style.css', revision: '0001'},
-	{url: '/manifest.json', revision: '0001'},
-	{url: '/main.js', revision: '0001'},
+	{url: '/index.html', revision: '210715_0100'},
+	{url: '/style.css', revision: '210715_0100'},
+	{url: '/manifest.json', revision: '210715_0100'},
+	{url: '/main.js', revision: '210715_0100'},
 	
 ];	
 
