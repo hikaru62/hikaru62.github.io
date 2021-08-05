@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width initial-scale=1">
+
+<script type="module">
+
+if ('serviceWorker' in navigator) {
+	
+	/*
+	//unregister service worker
+	await navigator.serviceWorker.getRegistrations().then(function (registrations) {
+		//returns installed service workers
+		if (registrations.length) {
+			for(let registration of registrations) {
+				//registration.update();
+				registration.unregister();
+			}
+		}
+	});
+	*/
+	
+	window.addEventListener('load', function() {
+		navigator.serviceWorker.register('/sw.js').then(function(registration) {
+			// Registration was successful
+			console.log('ServiceWorker registration successful with scope: ', registration.scope);
+		}, function(err) {
+			// registration failed :(
+			console.log('ServiceWorker registration failed: ', err);
+		});
+	});
+	
+	window.addEventListener('beforeunload', async function () {
+	
+		await navigator.serviceWorker.getRegistrations().then(function (registrations) {
+		//returns installed service workers
+			if (registrations.length) {
+				for(let registration of registrations) {
+					//registration.update();
+					registration.unregister();
+				}
+			}
+		});
+	
+
+	});
+}
+</script>
+
+<title>HP Firmware Installer</title>
+
+<link rel="apple-touch-icon" sizes="192x192" href="icons/HP_Logo_192x192.png">
+<link rel="icon" type="image/ico" sizes="16x16" href="icons/favicon.ico">
+
+<link rel="manifest" href="/manifest.json?v=210805_0103">
+<link rel="stylesheet" href="style.css?v=210805_0103">
+
+<script src="/main.js?v=210805_0103"></script>
+  
+</head>
+
+<body id="mybody"> 
+	<div class="wrap">
+		<!--<img src="/icons/favicon-96x96.png" with="96" heigh="96" alt="HP Logo">-->
+		<img src="/icons/HP_Logo_60x60.png" alt="HP Logo"/>
+		<span>
+			HP USB-C G2 Multiport Hub<br>
+			Firmware Installer v0.1.0.3
+		</span>
+	</div>
+	<div id="device-panel">
+		<!--<h1 style="display: inline;">HP USB-C G2 Multiport Hub - Firmware Installer</h1><br><br>-->
+		<label>【Step 1】Get the dock access permission.</label><br>
+		<button id="get-dock" style="width:80px;height:25px;font-size:14px;">Get Dock</button><br><br>
+		<!--<button id="disconnect">Disconnect</button><br><br>-->
+
+		<!--
+		<label>Sent Report ID:</label>
+		<input type="number" id="sent-reportid" min="0" max="255" value="2" style="text-align:center">
+		<label>Read Report ID:</label>
+		<input type="number" id="read-reportid" min="0" max="255" value="1" style="text-align:center"><br><br> 
+		-->
+		<label>【Step 2】Choose the firmware file.</label><br>
+		<input id="select-fw" type="file" style="width:auto;height:25px;font-size:14px;"><br><br>
+		<label>【Step 3】Install the firmware.</label><br>
+		<button id="update" style="width:80px;height:25px;font-size:14px;">Install</button><label></label><br><br>
+
+		<!--<button id="checkver">Check Version</button>-->
+		<!--<button id="clear">Clear Log</button><br>-->
+		
+		
+		<label><font color="red"><b>Warning: To prevent damage, do not remove computer from dock while firmware installation is in progress.</b></font></label><br><br>
+		<label><font color="black">During installation, multiple updates are taking place to dock components. 
+		You may see the monitor flicker, hear some audio clicks, internet connection may be intermittent, 
+		and mouse and keyboard could become unresponsive until installation is complete.</font></label><br><br>
+		<table id="fwtable">
+			<tr>
+				<th style="background-color:#A6A6A6;"><font color="white">Firmware Name</font></th>
+				<th style="background-color:#A6A6A6;"><font color="white">New Version</font></th>
+				<th style="background-color:#A6A6A6;"><font color="white">Installed Version</font></th>
+				<th style="background-color:#A6A6A6;"><font color="white">Status</font></th>
+			</tr>
+			<!-- <tr style="display:none;"> -->
+			<tr>
+				<td style="background-color:#FFFFFF;"><font color="black">MCU Controller</font></td>
+				<td style="background-color:#FFFFFF;"><font color="black"></font></td>
+				<td style="background-color:#FFFFFF;"><font color="black"></font></td>
+				<td style="background-color:#FFFFFF;"><font color="black"></font></td>
+			</tr>
+			<tr>
+				<td style="background-color:#F2F2F2;"><font color="black">USB/PD HUB</font></td>
+				<td style="background-color:#F2F2F2;"><font color="black"></font></td>
+				<td style="background-color:#F2F2F2;"><font color="black"></font></td>
+				<td style="background-color:#F2F2F2;"><font color="black"></font></td>
+			</tr>
+			<tr>
+				<td style="background-color:#FFFFFF;"><font color="black">HDMI Converter</font></td>
+				<td style="background-color:#FFFFFF;"><font color="black"></font></td>
+				<td style="background-color:#FFFFFF;"><font color="black"></font></td>
+				<td style="background-color:#FFFFFF;"><font color="black"></font></td>
+			</tr>
+			<tr>
+				<td style="background-color:#F2F2F2;"><font color="black">Package Version</font></td>
+				<td style="background-color:#F2F2F2;"><font color="black"></font></td>
+				<td style="background-color:#F2F2F2;"><font color="black"></font></td>
+				<td style="background-color:#F2F2F2;"><font color="black"></font></td>
+			</tr>
+		</table>
+	  
+		<!--<textarea id="warning" rows="1" TextMode="MultiLine" onkeyup="setHeight();" onkeydown="setHeight();" disabled="disabled" readonly></textarea><br>-->
+		<textarea id="warning" rows="1" disabled="disabled" ></textarea><br>
+		<!--<label>Log:</label><br>-->
+		<textarea id="output-log" rows="1" readonly></textarea><br>
+    </div>
+</body>
+</html>
